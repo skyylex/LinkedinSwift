@@ -56,12 +56,27 @@
 }
 
 
-- (void)requestURL:(NSString* _Nonnull)url requestType:(LinkedinSwiftRequestType* _Nonnull)requestType token:(LSLinkedinToken * _Nonnull)token success:(__nullable LinkedinSwiftRequestSuccessCallback)successCallback error:(__nullable LinkedinSwiftRequestErrorCallback)errorCallback {
-    [[LISDKAPIHelper sharedInstance] getRequest:url success:^(LISDKAPIResponse *response) {
-        successCallback([[LSResponse alloc] initWithString:response.data statusCode:response.statusCode]);
-    } error:^(LISDKAPIError *error) {
-        errorCallback(error);
-    }];
+- (void)requestURL:(NSString* _Nonnull)url requestType:(LinkedinSwiftRequestType* _Nonnull)requestType parameters:(NSDictionary *)parameters token:(LSLinkedinToken * _Nonnull)token success:(__nullable LinkedinSwiftRequestSuccessCallback)successCallback error:(__nullable LinkedinSwiftRequestErrorCallback)errorCallback {
+    if ([requestType isEqualToString:LinkedinSwiftRequestGet]) {
+        [[LISDKAPIHelper sharedInstance] getRequest:url success:^(LISDKAPIResponse *response) {
+            successCallback([[LSResponse alloc] initWithString:response.data statusCode:response.statusCode]);
+        } error:^(LISDKAPIError *error) {
+            errorCallback(error);
+        }];
+    } else if ([requestType isEqualToString:LinkedinSwiftRequestPOST]) {
+        NSData *data = nil;
+        
+        if (parameters) {
+            NSError *error = nil;
+            data = [NSJSONSerialization dataWithJSONObject:parameters options:NSJSONWritingPrettyPrinted error:&error];
+        }
+        
+        [[LISDKAPIHelper sharedInstance] postRequest:url body:data success:^(LISDKAPIResponse *response) {
+            successCallback([[LSResponse alloc] initWithString:response.data statusCode:response.statusCode]);
+        } error:^(LISDKAPIError *error) {
+            errorCallback(error);
+        }];
+    }
 }
 
 @end

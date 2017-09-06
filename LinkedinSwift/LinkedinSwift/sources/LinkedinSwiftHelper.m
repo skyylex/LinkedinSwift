@@ -89,14 +89,13 @@
 #pragma mark -
 #pragma mark Request
 
-- (void)requestURL:(NSString*)url requestType:(LinkedinSwiftRequestType*)requestType success:(LinkedinSwiftRequestSuccessCallback)successCallback error:(LinkedinSwiftRequestErrorCallback)errorCallback {
+- (void)requestURL:(NSString*)url requestType:(LinkedinSwiftRequestType*)requestType payloadData:(NSData *)payloadData success:(LinkedinSwiftRequestSuccessCallback)successCallback error:(LinkedinSwiftRequestErrorCallback)errorCallback {
     
     // Only can make request after logged in
     if (lsAccessToken != nil) {
-        // for now only GET is needed :)
-        if ([requestType isEqualToString:LinkedinSwiftRequestGet]) {
+        if ([requestType isEqualToString:LinkedinSwiftRequestGet] || [requestType isEqualToString:LinkedinSwiftRequestPOST]) {
             NSObject<LinkedinClient> *client = lsAccessToken.isFromMobileSDK ? nativeClient : webClient;
-            [client requestURL:url requestType:requestType token:lsAccessToken success:successCallback error:errorCallback];
+            [client requestURL:url requestType:requestType payloadData:payloadData token:lsAccessToken success:successCallback error:errorCallback];
         }
     }
 }

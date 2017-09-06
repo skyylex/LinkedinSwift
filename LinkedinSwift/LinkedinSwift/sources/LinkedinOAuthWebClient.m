@@ -53,21 +53,26 @@
     }];
 }
 
-- (void)requestURL:(NSString* _Nonnull)url requestType:(LinkedinSwiftRequestType* _Nonnull)requestType token:(LSLinkedinToken * _Nonnull)token success:(__nullable LinkedinSwiftRequestSuccessCallback)successCallback error:(__nullable LinkedinSwiftRequestErrorCallback)errorCallback {
+- (void)requestURL:(NSString* _Nonnull)url requestType:(LinkedinSwiftRequestType* _Nonnull)requestType parameters:(NSDictionary *)parameters token:(LSLinkedinToken * _Nonnull)token success:(__nullable LinkedinSwiftRequestSuccessCallback)successCallback error:(__nullable LinkedinSwiftRequestErrorCallback)errorCallback {
     
-#ifdef isSessionManager
-    [httpClient GET:url parameters:@{@"oauth2_access_token": token.accessToken} progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        successCallback([[LSResponse alloc] initWithDictionary:responseObject statusCode:200]);
-    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        errorCallback(error);
-    }];
-#else
-    [httpClient GET:url parameters:@{@"oauth2_access_token": token.accessToken} success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
-        successCallback([[LSResponse alloc] initWithDictionary:responseObject statusCode:200]);
-    } failure:^(AFHTTPRequestOperation * _Nullable operation, NSError * _Nonnull error) {
-        errorCallback(error);
-    }];
-#endif
+    NSMutableDictionary *requestParameters = (parameters == nil) ? @{}.mutableCopy : parameters.mutableCopy;
+    requestParameters[@"oauth2_access_token"] = token.accessToken;
+    
+    if ([requestType isEqualToString:LinkedinSwiftRequestGet]) {
+        [httpClient GET:url parameters:requestParameters progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+            successCallback([[LSResponse alloc] initWithDictionary:responseObject statusCode:200]);
+        } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+            errorCallback(error);
+        }];
+    } else if ([requestType isEqualToString:LinkedinSwiftRequestPOST]) {
+        [httpClient POST:url parameters:requestParameters progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+            successCallback([[LSResponse alloc] initWithDictionary:responseObject statusCode:200]);
+        } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+            errorCallback(error);
+        }];
+    } else {
+        NSLog(@"LinkedinOAuthWebClient RequestURL Not supported");
+    }
 }
 
 @end
