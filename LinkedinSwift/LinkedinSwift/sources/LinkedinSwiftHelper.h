@@ -70,7 +70,7 @@
  *  @param success     callback
  *  @param error       callback
  */
-- (void)requestURL:(NSString* _Nonnull)url requestType:(LinkedinSwiftRequestType* _Nonnull)requestType success:(__nullable LinkedinSwiftRequestSuccessCallback)success error:(__nullable LinkedinSwiftRequestErrorCallback)error;
+- (void)requestURL:(nonnull NSString*)url requestType:(nonnull LinkedinSwiftRequestType *)requestType parameters:( NSDictionary * _Nullable )parameters success:(LinkedinSwiftRequestSuccessCallback _Nullable)successCallback error:(LinkedinSwiftRequestErrorCallback _Nullable)errorCallback;
 
 /**
  call this from application:openURL:sourceApplication:annotation: in AppDelegate to check if the callback can be handled by LinkedIn SDK.
